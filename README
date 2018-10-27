@@ -1,0 +1,4 @@
+If you want to use this on your netbeans, change the code's class name and package name
+THE MAIN FILE IS MiniProjectPSB. Set it to main class on your netbeans, then it will always run this file
+Most of the project's source code is already done, just need to add one more class that takes in bottom time and displays
+your max depth.
