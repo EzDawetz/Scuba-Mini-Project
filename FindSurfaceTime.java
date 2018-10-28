@@ -1,13 +1,10 @@
 package miniprojectpsb;
 import java.util.Scanner;
 
-
 /**
  * 
  * @author david
  * Added comments to help with written report
- * Made a small tweak on the limit breaking if elses(Line 257 to 274), don't 
- * know if I did the right thing so I'm gonna put this on a separate file
  */
 public class FindSurfaceTime{
     static Scanner input = new Scanner(System.in);
@@ -182,7 +179,7 @@ public class FindSurfaceTime{
                     
                     
                     if (subtractedBottomTime == 0){break;}else{
-                    subtractedBottomTime = RoundDown(subtractedBottomTime,
+                    subtractedBottomTime = RoundUp(subtractedBottomTime,
                     bottomTimeArray[count]);}
                     //Round up subtractedBottomTime
                     }
@@ -199,8 +196,7 @@ public class FindSurfaceTime{
                 if (newDepth==depths[count]){
                     for (int count2=0;count2<bottomTimeArray[count].length;
                     count2++){
-                        if(bottomTimeArray[count][count2] == 
-                        subtractedBottomTime){
+                        if(bottomTimeArray[count][count2] == subtractedBottomTime){
                             requiredPressureGroup = alphabet[count2];
                             /**
                              * We get our requiredPressureGroup from finding
@@ -208,8 +204,7 @@ public class FindSurfaceTime{
                              * then find our secound value by looping through
                              * each of the bottom time's values in that depth's
                              * array. Then we use that secondValue position in
-                             * the alphabet. This gives us our 
-                             * requiredPressureGroup
+                             * the alphabet. This gives us our requiredPressureGroup
                              */
                             
                             break;
@@ -254,23 +249,18 @@ public class FindSurfaceTime{
                if (oldPressureGroup == alphabet[count]){
                    for (int count2=0; count2<alphabet.length; count2++){
                        
-                       if (requiredPressureGroup.equals("below A")){
-                           newSurfaceTime = "above " + slice_range
-                           (surfaceTimeArray[count][0], 8, 12);
+                       if (count>count2){
+                           newSurfaceTime = "above " + slice_range(surfaceTimeArray[count][0], 8, 12);
                            /**
-                            * This means you need a residual nitrogen time of
-                            * 0. Meaning you have to have a surface time of more
-                            * than the maximum required
-                            */ 
+                            * This if else needs to be revised, because I don't
+                            * know why it's here. But it has to be here for 
+                            * stuff that goes over the table's limit. Shit.
+                            */
                            
                        }else if(count<count2){
                            newSurfaceTime = "below 0:00, which means "
                                   + "you don't really need to surface";
                            break;
-                           /**
-                            * This means your residual nitrogen time is less
-                            * than the required. So you don't have to resurface
-                            */
                        }
                        
                        
@@ -286,42 +276,19 @@ public class FindSurfaceTime{
                    }
                }
            }
-           System.out.println("The required surface time to reach your goal is "
-                   + newSurfaceTime);
+           System.out.println("The required surface time to reach your goal is " + newSurfaceTime);
            //END
            pressureGroup = newPressureGroup;
        }
     }
         
             
-    public static int RoundUp(int i, int[] array){  //Method to round up
-        /**
-         * RoundUp takes an int and an array as value
-         */
-        int d = 0;
-        //int d is the new rounded number, which we will return
-
-        for(int count=0;count<array.length;count++){
-            //This for loop will loop through each of the values in a 1D array
-            if (i<=array[count]){
-                /**
-                 * If the given int is less than or equal to one value, we set
-                 * int d to that value and end the loop.
-                 */
-                d = array[count];
-                break;
-            }
-        }
-        return d;
-    }
     
-    
-    public static int RoundDown(int i, int[] array){
-        //This is just round up reversed
+    public static int RoundUp(int i, int[] bottomTimeArray){
         int d = 0;
-        for(int count=array.length - 1;count>0;count--){
-            if (i>=array[count]){
-                d = array[count];
+        for(int count=0;count<bottomTimeArray.length;count++){
+            if (i<=bottomTimeArray[count]){
+                d = bottomTimeArray[count];
                 break;
             }
         }
@@ -329,11 +296,7 @@ public class FindSurfaceTime{
         
         return d;
     }
-    
-    
     public static String slice_range(String s, int startIndex, int endIndex) {
-        //Method to take part of a string
-        //I just took it from the internet, don't know how it works
         if (startIndex < 0) startIndex = s.length() + startIndex;
         if (endIndex < 0) endIndex = s.length() + endIndex;
         return s.substring(startIndex, endIndex);
