@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 /**
  * 
- * @author noob david
+ * @author david
  * 
  * UPDATE: Added Justin's CheckInput method and overloaded it for my needs.
  * This is in case the user inputs anything funny
