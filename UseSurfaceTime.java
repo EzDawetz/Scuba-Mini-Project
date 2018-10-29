@@ -9,14 +9,12 @@ import java.util.Scanner;
  *
  * @author david
  *
- * Gave a ton of comments to help on written report. This took ages cuz
- * I had trouble reading my own code. Also there is no way I'm shortening
- * the array just to make it fit into this line.                            -->
- * The rest of the code has been adjusted
+ * 
+ * UPDATE: Added Justin's CheckInput method and overloaded it for my needs
  */
 public class UseSurfaceTime {
+    static Scanner input = new Scanner(System.in);
     public static void main(String[] args){
-        Scanner input = new Scanner(System.in);
         //Declare arrays here
         int bottomTimeArray[][] = {{10,20,26,30,34,37,41,45,50,54,59,64,70,75,82,88,95,104,112,122,133,145,160,178,199,219},
             {9,17,23,26,29,32,35,38,42,45,49,53,57,62,66,71,76,82,88,94,101,108,116,125,134,147},
@@ -62,15 +60,11 @@ public class UseSurfaceTime {
         int depths[] = {10,12,14,16,18,20,22,25,30,35,40,42};
         //END
         //Detemine pressure group with depth and bottom time rounded up
-
-
-        System.out.print("Enter number of dives: ");
         //Determine number of dives
-        int dives = input.nextInt();
+        int dives = CheckInput("Input number of dives: ", "Error", 0);
 
-
-        System.out.print("Enter depth: ");
-        int depth = input.nextInt();
+        
+        int depth = CheckInput("Input depth: ", "Error", 1, 42);
         //Determine first dive's depth
         depth = RoundUp(depth,depths);
         //Round up depth to values in depths array
@@ -78,11 +72,12 @@ public class UseSurfaceTime {
 
         //Default value for first pressure group
         String pressureGroup = "null";
-
+        int NDL = 0;
         for (int count=0;count<depths.length;count++){
             if (depth==depths[count]){
+                NDL = bottomTimeArray[count][bottomTimeArray[count].length - 1];
                 System.out.println("Your NDL is "
-                + bottomTimeArray[count][bottomTimeArray[count].length - 1]);
+                + NDL);
                 /**
                  * Use for loop to find depth position in depths array.
                  * Take that position to find the last array
@@ -93,8 +88,7 @@ public class UseSurfaceTime {
         }
 
 
-        System.out.print("Enter bottom time: ");
-        int bottomTime = input.nextInt();
+        int bottomTime = CheckInput("Enter bottom time: ", "Error", 0, NDL);
         for (int count=0;count<depths.length;count++){
         /*
         * Since the array of bottom time is 2D, we need a for loop to find the
@@ -163,14 +157,14 @@ public class UseSurfaceTime {
                 ;count++){
 
                 int hour1 = Integer.parseInt
-                (slice_range(surfaceTimeArray[locationInSurface][count],0,1));
+                (SliceRange(surfaceTimeArray[locationInSurface][count],0,1));
                 /**
                  * Slice range takes the hour as a substring, then
                  * parseInt converts it to an int
                 */
 
                 int minute1 = Integer.parseInt
-                (slice_range(surfaceTimeArray[locationInSurface][count],2,4));
+                (SliceRange(surfaceTimeArray[locationInSurface][count],2,4));
 
                 int totalMinute1 = hour1*60 + minute1;
                 /*
@@ -183,10 +177,10 @@ public class UseSurfaceTime {
 
 
                 int hour2 = Integer.parseInt
-                (slice_range(surfaceTimeArray[locationInSurface][count],8,9));
+                (SliceRange(surfaceTimeArray[locationInSurface][count],8,9));
 
                 int minute2 = Integer.parseInt
-                (slice_range(surfaceTimeArray[locationInSurface][count],10,12));
+                (SliceRange(surfaceTimeArray[locationInSurface][count],10,12));
 
                 int totalMinute2 = hour2*60 + minute2;
                 /*
@@ -225,8 +219,7 @@ public class UseSurfaceTime {
             int actualBottomTime = 0;
             //Defaut values
 
-            System.out.print("Enter depth: ");
-            depth = input.nextInt();
+            depth = CheckInput("Input depth: ", "Error", 1, 42);
             depth = RoundUp(depth, depths);
             //Input depth and round up based on values in depths array
 
@@ -267,8 +260,7 @@ public class UseSurfaceTime {
             //Prints out newNDL
 
 
-            System.out.print("Input new bottom time: ");
-            bottomTime = input.nextInt() + actualBottomTime;
+            bottomTime = CheckInput("Input new bottom time: ","Error",1,newNDL) + actualBottomTime;
             /**
              * Take user input and store it in bottomTime, add actualBottomTime
              * to it
@@ -353,11 +345,56 @@ public class UseSurfaceTime {
     }
 
 
-    public static String slice_range(String s, int startIndex, int endIndex) {
+    public static String SliceRange(String s, int startIndex, int endIndex) {
         //Method to take part of a string
         //I just took it from the internet, don't know how it works
+        //THIS IS OOP :D not 
         if (startIndex < 0) startIndex = s.length() + startIndex;
         if (endIndex < 0) endIndex = s.length() + endIndex;
         return s.substring(startIndex, endIndex);
     }
+    
+     public static int CheckInput(String showUser,String ErrorMessage,int minValue,int maxValue) {
+        int d = 0;
+        boolean valid = false;
+        
+        do{
+        System.out.print(showUser);
+        if(input.hasNextInt()){
+           d = input.nextInt();
+            if (d < minValue || d > maxValue) {
+                System.out.println(ErrorMessage);
+            }else  {
+                valid = true;
+            }
+        }
+        else{
+            System.out.print("Not a valid input!\n");
+            input.next();
+        }
+        }while(valid == false);
+        return d;
+    }
+     public static int CheckInput(String showUser,String ErrorMessage,int minValue) {
+        int d = 0;
+        boolean valid = false;
+        
+        do{
+        System.out.print(showUser);
+        if(input.hasNextInt()){
+           d = input.nextInt();
+            if (d < minValue) {
+                System.out.println(ErrorMessage);
+            }else  {
+                valid = true;
+            }
+        }
+        else{
+            System.out.print("Not a valid input!\n");
+            input.next();
+        }
+        }while(valid == false);
+        return d;
+    }
+     
 }
