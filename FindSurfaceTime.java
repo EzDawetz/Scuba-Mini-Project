@@ -4,10 +4,10 @@ import java.util.Scanner;
 
 /**
  * 
- * @author david
- * Added comments to help with written report
- * Made a small tweak on the limit breaking if elses(Line 257 to 274), don't 
- * know if I did the right thing so I'm gonna put this on a separate file
+ * @author noob david
+ * 
+ * UPDATE: Added Justin's CheckInput method and overloaded it for my needs.
+ * This is in case the user inputs anything funny
  */
 public class FindSurfaceTime{
     static Scanner input = new Scanner(System.in);
@@ -60,13 +60,12 @@ public class FindSurfaceTime{
         //END
         
         
-        System.out.print("Enter number of dives: ");
-        int dives = input.nextInt()-1;
+        int dives = CheckInput("Enter number of dives: ", "Error", 0)-1;
         //Take in number of dives
         
         
         System.out.print("Enter depth: ");
-        int depth = input.nextInt();
+        int depth = CheckInput("Enter depth: ", "Error", 1, 42);
         depth = RoundUp(depth,depths);
         /**
          * Take depth as input and set it equal to the least value in the 
@@ -74,7 +73,7 @@ public class FindSurfaceTime{
          * to that value from the array
          */
         
-        
+        int NDL = 0;
         for (int count=0;count<depths.length;count++){
             if (depth==depths[count]){
                 /**
@@ -84,7 +83,7 @@ public class FindSurfaceTime{
                  * it by 1 then use it as the second value. So we get the 
                  * highest value from the firstValue's array
                  */
-                
+                NDL = bottomTimeArray[count][bottomTimeArray[count].length - 1];
                 System.out.println("Your NDL is " + bottomTimeArray[count]
                 [bottomTimeArray[count].length - 1]);
                 break;
@@ -92,8 +91,7 @@ public class FindSurfaceTime{
         }
         
         
-        System.out.print("Enter bottom time: ");
-        int bottomTime = input.nextInt();
+        int bottomTime = CheckInput("Enter bottom time: ", "Error", 1, NDL);
         for (int count=0;count<depths.length;count++){  
             if (depth==depths[count]){
                 bottomTime = RoundUp(bottomTime, bottomTimeArray[count]);
@@ -137,8 +135,7 @@ public class FindSurfaceTime{
            int oldNDL = 0;
            //Setting default values for the max bottom time
            
-           System.out.print("Enter depth: ");
-           int newDepth = input.nextInt();
+           int newDepth = CheckInput("Input Depth: ", "Error", 1, 42);
            newDepth = RoundUp(newDepth, depths);
            //Same process as before, but we get the new depth for 2+ dives
            
@@ -159,8 +156,8 @@ public class FindSurfaceTime{
            + oldNDL);
            
             
-           System.out.print("Enter bottom time: ");
-           int newBottomTime = input.nextInt();
+           int newBottomTime = CheckInput("Input Bottom Time: ", "Error", 1,
+                   oldNDL);
           //This will be used to find our new pressure group
            
            
@@ -189,9 +186,10 @@ public class FindSurfaceTime{
             } 
            
            System.out.println("Subtracted bottom time is " +oldNDL+ "-" 
-           + newBottomTime+ "=" +subtractedBottomTime);
+           + newBottomTime+ "=" +subtractedBottomTime);  
            
-           String requiredPressureGroup = "below A";
+           String requiredPressureGroup = "below A, meaning you need an "
+                   + "residual nitrogen time of 0 to complete your dive";
            //Default value
            
            for (int count=0;count<depths.length;count++){
@@ -254,8 +252,8 @@ public class FindSurfaceTime{
                if (oldPressureGroup == alphabet[count]){
                    for (int count2=0; count2<alphabet.length; count2++){
                        
-                       if (requiredPressureGroup.equals("below A")){
-                           newSurfaceTime = "above " + slice_range
+                       if (requiredPressureGroup.equals("below A, meaning you need an residual nitrogen time of 0 to complete your dive")){
+                           newSurfaceTime = "above " + SliceRange
                            (surfaceTimeArray[count][0], 8, 12);
                            /**
                             * This means you need a residual nitrogen time of
@@ -331,13 +329,54 @@ public class FindSurfaceTime{
     }
     
     
-    public static String slice_range(String s, int startIndex, int endIndex) {
+    public static String SliceRange(String s, int startIndex, int endIndex) {
         //Method to take part of a string
         //I just took it from the internet, don't know how it works
         if (startIndex < 0) startIndex = s.length() + startIndex;
         if (endIndex < 0) endIndex = s.length() + endIndex;
         return s.substring(startIndex, endIndex);
     }
+    public static int CheckInput(String showUser,String ErrorMessage,int minValue) {
+        int d = 0;
+        boolean valid = false;
+        
+        do{
+        System.out.print(showUser);
+        if(input.hasNextInt()){
+           d = input.nextInt();
+            if (d < minValue) {
+                System.out.println(ErrorMessage);
+            }else  {
+                valid = true;
+            }
+        }
+        else{
+            System.out.print("Not a valid input!\n");
+            input.next();
+        }
+        }while(valid == false);
+        return d;
+    }
+    public static int CheckInput(String showUser,String ErrorMessage,int minValue,int maxValue) {
+        int d = 0;
+        boolean valid = false;
+        
+        do{
+        System.out.print(showUser);
+        if(input.hasNextInt()){
+           d = input.nextInt();
+            if (d < minValue || d > maxValue) {
+                System.out.println(ErrorMessage);
+            }else  {
+                valid = true;
+            }
+        }
+        else{
+            System.out.print("Not a valid input!\n");
+            input.next();
+        }
+        }while(valid == false);
+        return d;
+    }
     
 }
- 
