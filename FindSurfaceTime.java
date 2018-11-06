@@ -63,6 +63,17 @@ public class FindSurfaceTime {
                                {11,9,7,6,5,5,4,3},
                                {7,4}
                                };
+        int[][] abt     = {{20,41,59,74,86,97,107,115,124,131,137,144,149,155,160,165,169,174,178,182,185,189,193,199,209},
+                          {13,22,31,39,46,53,59,65,71,76,81,85,90,94,98,102,105,109,112,115,118,121,124,130,138},
+                          {6,11,16,21,25,30,34,37,41,45,48,51,55,58,61,63,66,69,71,74,76,79,83,90},
+                          {2,5,9,12,16,19,22,24,27,30,33,35,38,49,43,45,47,49,51,53,55,59,65},
+                          {3,5,8,10,13,15,17,20,22,24,26,28,39,32,34,36,38,40,41,45,50},
+                          {3,5,7,9,11,13,15,17,19,20,22,24,25,27,29,30,32,35,39},
+                          {3,5,7,8,10,12,13,15,16,18,19,21,22,24,25,28,32},
+                          {3,4,6,7,8,10,11,12,14,15,16,18,19,21,25},
+                          {3,4,5,6,7,8,9,10,11,12,14,17},
+                          {3,4,5,5,6,7,9,11},
+                          {4,7}};
         
         
         
@@ -78,14 +89,14 @@ public class FindSurfaceTime {
         int depthPosition = GetPosition(depth, depthsArray);
         
         int NDL = bottomTimeArray[depthPosition][bottomTimeArray[depthPosition].length - 1];
-        System.out.println("The NDL for that depth is " + NDL);
+        System.out.println("The NDL for that depth = " + NDL);
         
         int bottomTime = CheckInput("Input bottom time of first dive here: ", "Error", 1, NDL);
         bottomTime = RoundUp(bottomTime, bottomTimeArray[depthPosition]);
         int bottomTimePosition = GetPosition(bottomTime, bottomTimeArray[depthPosition]);
         
         String pressureGroup = alphabet[bottomTimePosition];
-        System.out.println("Your pressure group is "+ pressureGroup);
+        System.out.println("Your pressure group = "+ pressureGroup);
         
         //END-------------------------------------------------------------------
         
@@ -94,8 +105,9 @@ public class FindSurfaceTime {
         
         
  
-         
+        boolean noNeedSurface = false;
         for(;;){
+            if (!noNeedSurface){
             if (CheckInput("Would you like to dive again? (Input 1 for yes and 2 for no): ", "Invalid input!", 1, 2) == 2){
                 break;
             }
@@ -103,31 +115,37 @@ public class FindSurfaceTime {
             //CODE FOR 2+ DIVES HERE
             depth = CheckInput("Input depth of next dive here: ", "Error", 1, depthsArray[depthsArray.length-1]);
             depth = RoundUp(depth, depthsArray);
-            depthPosition = GetPosition(depth, depthsArray);
+            depthPosition = GetPosition(depth, depthsArray);}
             
             //FIND ACTUAL BOTTOM TIME FROM PREVIOUS DIVE
             
             NDL = ANDLArray[depthPosition][0];
-            System.out.println("The NDL for that depth is " + NDL);
+            System.out.println("The NDL for that depth = " + NDL);
             
             bottomTime = CheckInput("Input bottom time of next dive here: ", "Error", 1, NDL);
-            bottomTime = RoundUp(bottomTime, bottomTimeArray[depthPosition]);
+            bottomTime = RoundUp(RoundUp(bottomTime, abt[depthPosition]), bottomTimeArray[depthPosition]);
+            System.out.println("Your actual bottom time = " + bottomTime);
             bottomTimePosition = GetPosition(bottomTime, bottomTimeArray[depthPosition]);
-            
-            String oldPressureGroup = pressureGroup;
-            pressureGroup = alphabet[bottomTimePosition];
             
             String requiredPressureGroup = "";
             for (int count = 0; count<ANDLArray[depthPosition].length; count++){
-                if (ANDLArray[depthPosition][count] >= bottomTime){
+                if (ANDLArray[depthPosition][count] >= RoundDown(bottomTime, ANDLArray[depthPosition])){
                     requiredPressureGroup = alphabet[count];
                 }
             }
-            System.out.println("Your required pressure group is "+requiredPressureGroup);
-            System.out.println("Your new pressure group is "+ pressureGroup);
+            System.out.println("Required pressure group =  "+requiredPressureGroup);
             
-            String surfaceTime = surfaceTimeArray[GetPosition(oldPressureGroup, alphabet)][GetPosition(requiredPressureGroup, alphabet)];
-            System.out.println("Your required surface time is " + surfaceTime);
+            noNeedSurface = GetPosition(requiredPressureGroup, alphabet) > GetPosition(pressureGroup, alphabet);
+            if (noNeedSurface){
+                System.out.println("You don't need to surface. Please re-input your bottom time");
+                continue;
+            }
+            
+            String surfaceTime = surfaceTimeArray[GetPosition(pressureGroup, alphabet)][GetPosition(requiredPressureGroup, alphabet)];
+            System.out.println("Required surface time = " + surfaceTime);
+            
+            pressureGroup = alphabet[bottomTimePosition];
+            System.out.println("Pressure group = "+ pressureGroup);
             
         }
     }
@@ -172,7 +190,7 @@ public class FindSurfaceTime {
     public static int RoundDown(int i, int[] array){
         //This is just round up reversed
         int d = 0;
-        for(int count=array.length - 1;count>0;count--){
+        for(int count=0;count<array.length;count++){
             if (i>=array[count]){
                 d = array[count];
                 break;
