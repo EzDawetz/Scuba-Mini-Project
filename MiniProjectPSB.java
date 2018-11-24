@@ -18,20 +18,8 @@ public class MiniProjectPSB {
         // TODO code application logic here
         Scanner input = new Scanner(System.in);
         
-        FindSurfaceTime fst = new FindSurfaceTime();
-        UseSurfaceTime ust = new UseSurfaceTime();
-        
-        System.out.println("Select one input output option: ");
-        System.out.println("1. Input depth, Input bottom time, Input repetetive dive's depth, Input repetitive dive's bottom time, Output Surface time");
-        System.out.println("2. Input depth, Input bottom time, Input surface time,Input repetetive dive's depth, Output NDL, Output pressure group");
-        System.out.print("(1/2): ");
-        int option = input.nextInt();
-        
-        if (option == 1){
-            fst.main(args);
-        }else if (option == 2){
-            ust.main(args);
-        }
+        FindAndUseSurfaceTime fst = new FindSurfaceTime();
+        fst.main(args);
     }
     
 }
