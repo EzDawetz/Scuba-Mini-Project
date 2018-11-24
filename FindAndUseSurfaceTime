@@ -1,0 +1,155 @@
+package miniprojectpsb;
+import java.util.Scanner;
+
+/**
+ *
+ * @author David Angkawijaya
+ */
+public class FindAndUseSurfaceTime extends vars{
+    static Scanner input = new Scanner(System.in);
+    public static void main(String[] args){
+        
+        //FIND PRESSURE GROUP OF FIRST DIVE-------------------------------------
+        int depth = CheckInput("Input depth here(1-42): ",
+                "Invalid input!", 0,42);
+        depth = GetPosition(depth,depthsArray);
+        
+        int NDL = bottomTimeArray[depth][bottomTimeArray[depth].length-1];
+        System.out.println("The NDL for that depth = " + NDL);
+        
+        int bottomTime = CheckInput("Input bottom time here (1-" +NDL+"):"
+                + " ", "Invalid input", 0, NDL);
+        bottomTime = GetPosition(bottomTime, bottomTimeArray[depth]);
+        
+        getSafetyStop(depth,bottomTime);
+        
+        int pressureGroup = bottomTime;
+        System.out.println("Your pressure group after first dive ="
+                + " " + alphabet[pressureGroup]);
+        //END-------------------------------------------------------------------
+        
+        
+        boolean noNeedSurface = false;
+        for(;;){
+            if (!noNeedSurface){
+                if (CheckInput("Would you like to dive again? (Input 1 for yes "
+                        + "and 2 for no): ", "Invalid input!", 1, 2) == 2){
+                    break;
+                }
+            }
+            depth = CheckInput("Input depth here(1-40): ",
+                    "Invalid input!", 0,40);
+            depth = GetPosition(depth,depthsArray);
+            
+            NDL = ANDLArray[depth][0];
+            System.out.println("Your ANDL = " + NDL);
+            
+            bottomTime = CheckInput("Input bottom time here (1-" +NDL+"): ",
+                    "Invalid input", 0, NDL);
+            bottomTime = GetPosition(bottomTime, bottomTimeArray[depth]);
+            getSafetyStop(depth,bottomTime);
+            
+            
+            int requiredBottomTime = ANDLArray[depth][bottomTime]; 
+            int requiredPressureGroup = GetPosition(requiredBottomTime,
+                    bottomTimeArray[depth]);
+            System.out.println("Your required pressure group = "
+                    + alphabet[requiredPressureGroup]);
+            
+            noNeedSurface = requiredPressureGroup>pressureGroup;
+            if (noNeedSurface){
+                System.out.println("You don't need to "
+                        + "surface. Please re-input");
+                continue;
+            }
+            
+            
+            String surfaceTime = 
+                    surfaceTimeArray[pressureGroup][requiredPressureGroup];
+            System.out.println("Your required surface time = " + surfaceTime);
+            
+            
+            int minSurfaceHour = Integer.parseInt(SliceRange(surfaceTime, 0,1));
+            int minSurfaceMinute = Integer.parseInt(SliceRange(surfaceTime, 2,4));
+            int minSurface = minSurfaceHour * 60 + minSurfaceMinute;
+            
+            String surfaceTimeMax = surfaceTimeArray[pressureGroup][0];
+            int maxSurfaceHour = Integer.parseInt(SliceRange(surfaceTimeMax,8,9));
+            int maxSurfaceMinute = Integer.parseInt(SliceRange(surfaceTimeMax,10,12));
+            int maxSurface = maxSurfaceHour * 60 + maxSurfaceMinute;
+            
+            int PGAfterSurface = 0;
+            int surfaceTimeInput = CheckInput("Please input surface time in minutes here (" +minSurface+ "-"+maxSurface+"): ","Invalid input",minSurface,1000);
+            for (int count = 0; count<surfaceTimeArray[pressureGroup].length;count++){
+                int hour1 = Integer.parseInt(SliceRange(surfaceTimeArray[pressureGroup][count], 0, 1));
+                int minute1 = Integer.parseInt(SliceRange(surfaceTimeArray[pressureGroup][count], 2, 4));
+                int total1 = hour1*60 + minute1;
+                
+                
+                int hour2 = Integer.parseInt(SliceRange(surfaceTimeArray[pressureGroup][count], 8, 9));
+                int minute2 = Integer.parseInt(SliceRange(surfaceTimeArray[pressureGroup][count], 10, 12));
+                int total2 = hour2*60 + minute2;
+                
+                if (surfaceTimeInput >= total1 && surfaceTimeInput <= total2){
+                    PGAfterSurface= count;
+                }
+            }
+            
+            System.out.println("Your pressure group after surfacing = "+alphabet[PGAfterSurface]);
+            
+            pressureGroup = GetPosition(bottomTimeArray[depth][PGAfterSurface] + bottomTimeArray[depth][pressureGroup], bottomTimeArray[depth]);
+            
+            System.out.println("Your new pressure group after finishing you dive = " 
+                    + alphabet[pressureGroup]);
+        }
+        
+         
+    }
+    
+    
+    //METHODS ARE DOWN THERE----------------------------------------------------
+    
+    
+    public static String SliceRange(String s, int startIndex, int endIndex) {
+        //Method to take part of a string
+        //I just took it from the internet, don't know how it works
+        //THIS IS OOP :D not 
+        if (startIndex < 0) startIndex = s.length() + startIndex;
+        if (endIndex < 0) endIndex = s.length() + endIndex;
+        return s.substring(startIndex, endIndex);
+    }
+    
+    
+    public static int GetPosition(int i, int[] array){
+        int d = 0;
+        for(int count=0;count<array.length;count++){
+            if (i<=array[count]){
+                d = array[count];
+                break;
+            }
+        }
+        int positionInArray = 0;
+        while (array[positionInArray] != d){
+            positionInArray++;
+        }
+        return positionInArray;
+    }
+    public static void getSafetyStop(int a , int b){
+        int depth = depthsArray[a];
+        int time  = bottomTimeArray[a][b];
+        if ((depth == 10 && time >= 160)
+                || (depth == 12 && time >= 116)
+                || (depth == 14 && time >= 82)
+                || (depth == 16 && time >= 63)
+                || (depth == 18 && time >= 51)
+                || (depth == 20 && time >= 40)
+                || (depth == 22 && time >= 32)
+                || (depth == 25 && time >= 25)
+                || depth >= 30) {
+            System.out.println("Safety stop is required");
+        }
+        else{
+            System.out.println("Safety stop is not required");
+        }
+    }
+ }
